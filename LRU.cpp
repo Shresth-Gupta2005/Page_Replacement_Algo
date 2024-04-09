@@ -1,59 +1,59 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
-typedef pair<int,int> ipair;
-
-int main(){
-	int frames;
-	int req;
-	cout<<"Enter the no. of requests\n";
-	cin>>req;
-	cout<<"Enter the no. of frames used\n";
-	cin>>frames;
-	vector<int> q;
-	map<int,int> have;
-	int page_faults=0;
-	vector<int> v_req(req);
-	cout<<"Enter the page requests\n";
-	for(int i=0;i<req;i++){
-		cin>>v_req[i];
-	}
-	for(int i=0;i<req;i++){
-		int cur=v_req[i];
-		if(have[cur]==0){
-			page_faults++;
-			have[cur]++;
-			if(q.size()<frames){
-				q.push_back(cur);
+void LRU(vector<int>pages,int frames)
+{
+	int numberOfPage=pages.size();
+	vector<int>q;
+	/* pages are stored in q, a such way that least recently used page is at front of vector*/
+	vector<int>present(numberOfPage,0);
+	int pageFaults=0;
+	for(int i=0;i<numberOfPage;i++)
+	{
+		int currentPage=pages[i];
+		if(present[currentPage]==0)
+		{
+			pageFaults++;
+			if(q.size()<frames)
+			{
+				q.push_back(currentPage);
 			}
-			else{
-				vector<int> temp;
-				for(int i=1;i<frames;i++){
-					temp.push_back(q[i]);
-				}
-				temp.push_back(cur);
-				have[q[0]]=0;
-				q=temp;
+			else
+			{
+				present[q[0]]=0;
+				q.erase(q.begin());
+				q.push_back(currentPage);
 			}
-			cout<<cur<<"--->page miss\n";
+			present[currentPage]=1;
+			cout<<currentPage<<" is a page miss."<<endl;
 		}
-		else{
-			int first=v_req[0];
-			vector<int> temp;
-			for(int i=0;i<q.size();i++){
-				if(q[i]!=cur){
-					temp.push_back(q[i]);
-				}
+		else
+		{
+			int j=0;
+			while(q[j]!=currentPage)
+			{
+				j++;
 			}
-			temp.push_back(cur);
-			q=temp;
-			cout<<cur<<"--->page hit\n";
+			q.erase(q.begin()+j);
+			q.push_back(currentPage);
+			cout<<currentPage<<" is a page hit."<<endl;
 		}
 	}
-	cout<<"Total no. of page faults ="<<page_faults<<endl;
-	return 0;
+	cout<<"Total number of page faluts : "<<pageFaults<<endl;
 }
-
-/*
-Author: Shyam Sunder
-Topic: Least Recently Used virtual page replacement algorithm
-*/
+int main()
+{
+	int numberOfPages,frames;
+	cout<<"Enter the number of pages : ";
+	cin>>numberOfPages;
+	cout<<"Enter the number of frames : ";
+	cin>>frames;
+	vector<int>pages(numberOfPages);
+	cout<<"Enter the page requests : ";
+	for(int i=0;i<numberOfPages;i++)
+	{
+		cin>>pages[i];
+	}
+	LRU(pages,frames);
+}
+/* Time Complexity : O(numberOfPages*frames)
+   Space Complexity: O(numberOfPages+frames) */

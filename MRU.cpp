@@ -1,54 +1,58 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
-
-int main(){
-	int frames;
-	int req;
-	cout<<"Enter the no. of requests\n";
-	cin>>req;
-	cout<<"Enter the no. of frames used\n";
-	cin>>frames;
-	vector<int> avail;
-	map<int,int> have;
-	int page_faults=0;
-	vector<int> v_req(req);
-	cout<<"Enter the page requests\n";
-	for(int i=0;i<req;i++){
-		cin>>v_req[i];
-	}
-	for(int i=0;i<req;i++){
-		int cur=v_req[i];
-		if(have[cur]==0){
-			page_faults++;
-			have[cur]=1;
-			if(avail.size()<frames){
-				avail.push_back(cur);
+void MRU(vector<int>pages,int frames)
+{
+	int numberOfPages=pages.size();
+	vector<int>q;
+	/* pages are stored in q, most recently used is at end of vector.*/
+	vector<int>present(numberOfPages,0);
+	int pageFaults=0;
+	for(int i=0;i<numberOfPages;i++)
+	{
+		int currentPage=pages[i];
+		if(present[currentPage]==0)
+		{
+			pageFaults++;
+			if(q.size()<frames)
+			{
+				q.push_back(currentPage);
 			}
-			else{
-				vector<int> temp;
-				have[avail[frames-1]]=0;
-				avail[frames-1]=cur;
-				
+			else
+			{
+				present[q[frames-1]]=0;
+				q[frames-1]=currentPage;
 			}
-			cout<<cur<<"--->page miss\n";
+			present[currentPage]=1;
+			cout<<currentPage<<" is a page miss."<<endl;
 		}
-		else{
-			vector<int> temp;
-			for(int i=0;i<avail.size();i++){
-				if(avail[i]!=cur){
-					temp.push_back(avail[i]);
-				}
+		else
+		{
+			int j=0;
+			while(q[j]!=currentPage)
+			{
+				j++;
 			}
-			temp.push_back(cur);
-			avail=temp;
-			cout<<cur<<"--->page hit\n";
+			q.erase(q.begin()+j);
+			q.push_back(currentPage);
+			cout<<currentPage<<" is a page hit."<<endl;
 		}
 	}
-	cout<<"Total no. of page faults ="<<page_faults<<endl;
-	return 0;
+	cout<<"Total number of page faults : "<<pageFaults<<endl;
 }
-/*
-MRU Algorithm -Page Replacement
-Author- Shyam Sunder
-
-*/
+int main()
+{
+	int numberOfPages,frames;
+	cout<<"Enter the number of pages : ";
+	cin>>numberOfPages;
+	cout<<"Enter the number of frames : ";
+	cin>>frames;
+	vector<int>pages(numberOfPages);
+	cout<<"Enter the page requests : ";
+	for(int i=0;i<numberOfPages;i++)
+	{
+		cin>>pages[i];
+	}
+	MRU(pages,frames);
+}
+/* Time Complexity : O(numberOfPages*frames)
+   Space Complexity: O(numberOfPages+frames) */

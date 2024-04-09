@@ -1,45 +1,51 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
-
-
-int main(){
-	int frames;
-	int req;
-	cout<<"Enter the no. of requests\n";
-	cin>>req;
-	cout<<"Enter the no. of frames used\n";
-	cin>>frames;
-	queue<int> q;
-	map<int,int> have;
-	int page_faults=0;
-	vector<int> v_req(req);
-	cout<<"Enter the page requests\n";
-	for(int i=0;i<req;i++){
-		cin>>v_req[i];
-	}
-	for(int i=0;i<req;i++){
-		int cur=v_req[i];
-		if(have[cur]==0){
-			page_faults++;
-			have[cur]=1;
-			if(q.size()<frames){
-				q.push(cur);
+void fifo(vector<int>pages,int frames)
+{
+	int numberOfPages=pages.size();
+	queue<int>q;
+	vector<int>present(numberOfPages,0);
+	int pageFaults=0;
+	for(int i=0;i<numberOfPages;i++)
+	{
+		int currentPage=pages[i];
+		if(present[currentPage]==0)
+		{
+			pageFaults++;
+			if(q.size()<frames)
+			{
+				q.push(currentPage);
 			}
-			else{
-				have[q.front()]=0;
+			else
+			{
+				present[q.front()]=0;
 				q.pop();
-				q.push(cur);
+				q.push(currentPage);
 			}
-			cout<<cur<<"--->page miss\n";
+			present[currentPage]=1;
+			cout<<currentPage<<" is a page miss."<<endl;
 		}
-		else{
-			cout<<cur<<"--->page hit\n";
+		else
+		{
+			cout<<currentPage<<" is a page hit."<<endl;
 		}
 	}
-	cout<<"Total no. of page faults ="<<page_faults<<endl;
-	return 0;
+	cout<<"Total number of page faults : "<<pageFaults<<endl;
 }
-/*
-Author: Shyam Sunder
-Topic: First in,First out virtual page replacement algorithm
-*/
+int main()
+{
+	int numberOfPages,frames;
+	cout<<"Enter the number of pages : ";
+	cin>>numberOfPages;
+	cout<<"Enter the number of frames : ";
+	cin>>frames;
+	vector<int>pages(numberOfPages);
+	cout<<"Enter the page requests : ";
+	for(int i=0;i<numberOfPages;i++)
+	{
+		cin>>pages[i];
+	}
+	fifo(pages,frames);
+}
+/* Time Complexity : O(numberOfPages)
+   Space Complexity: O(numberOfPages+frames) */
